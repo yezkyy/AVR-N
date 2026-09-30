@@ -16,11 +16,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import Lenis from 'lenis'
 
 const isReady = ref(false)
 let lenisInstance: Lenis | null = null
 let observer: IntersectionObserver | null = null
+const router = useRouter()
 
 const initLenis = () => {
   if (!process.client) return
@@ -93,8 +95,23 @@ const handleNavigate = (selector: string) => {
   }
 }
 
+// Ensure every route change starts at the very top of the page immediately
+router.afterEach((to) => {
+  if (!process.client) return
+  nextTick(() => {
+    if (to.hash) {
+      handleNavigate(to.hash)
+    } else {
+      if (lenisInstance) {
+        lenisInstance.scrollTo(0, { immediate: true })
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    }
+    initIntersectionObserver()
+  })
+})
+
 onMounted(() => {
-  // Fallback if preloader is skipped in reduced motion
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (prefersReduced) {
     onPreloaderComplete()

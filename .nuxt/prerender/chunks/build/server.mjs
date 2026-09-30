@@ -4,7 +4,7 @@ import { p as publicAssetsURL, b as baseURL } from '../_/renderer.mjs';
 import { createHooks } from 'file://D:/Project/AVR%C3%89N/node_modules/hookable/dist/index.mjs';
 import { getContext, executeAsync } from 'file://D:/Project/AVR%C3%89N/node_modules/unctx/dist/index.mjs';
 import { sanitizeStatusCode, createError as createError$1, appendHeader } from 'file://D:/Project/AVR%C3%89N/node_modules/h3/dist/index.mjs';
-import { RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'file://D:/Project/AVR%C3%89N/node_modules/vue-router/vue-router.node.mjs';
+import { RouterView, useRouter as useRouter$1, createMemoryHistory, createRouter, START_LOCATION } from 'file://D:/Project/AVR%C3%89N/node_modules/vue-router/vue-router.node.mjs';
 import { defu } from 'file://D:/Project/AVR%C3%89N/node_modules/defu/dist/defu.mjs';
 import { parseURL, encodePath, decodePath, hasProtocol, isScriptProtocol, joinURL, withQuery } from 'file://D:/Project/AVR%C3%89N/node_modules/ufo/dist/index.mjs';
 import { ssrRenderAttrs, ssrRenderAttr, ssrRenderList, ssrInterpolate, ssrRenderClass, ssrRenderStyle, ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from 'file://D:/Project/AVR%C3%89N/node_modules/vue/server-renderer/index.mjs';
@@ -546,13 +546,27 @@ function _calculatePosition(to, from, savedPosition, defaultHashScrollBehaviour)
     top: 0
   };
 }
+const routerOptions1 = {
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return {
+        el: to.hash,
+        top: 60,
+        behavior: "smooth"
+      };
+    }
+    return { top: 0, left: 0, behavior: "instant" };
+  }
+};
 const configRouterOptions = {
   hashMode: false,
   scrollBehaviorType: "auto"
 };
+const hashMode = routerOptions1.hashMode ?? false;
 const routerOptions = {
   ...configRouterOptions,
-  ...routerOptions0
+  ...routerOptions0,
+  ...routerOptions1
 };
 const sensitiveMatcher = (m, p) => {
   return [];
@@ -590,12 +604,12 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-CXyq1V0M.mjs')
+    component: () => import('./index-DgO7DxnG.mjs')
   },
   {
     name: "products-id",
     path: "/products/:id()",
-    component: () => import('./_id_-DMF3wk87.mjs')
+    component: () => import('./_id_-Bd1I3zv1.mjs')
   }
 ];
 const validate = /* @__PURE__ */ defineNuxtRouteMiddleware(async (to) => {
@@ -637,6 +651,9 @@ const plugin = /* @__PURE__ */ defineNuxtPlugin({
   async setup(nuxtApp) {
     let __temp, __restore;
     let routerBase = (/* @__PURE__ */ useRuntimeConfig()).app.baseURL;
+    if (hashMode && !routerBase.includes("#")) {
+      routerBase += "#";
+    }
     const history = routerOptions.history?.(routerBase) ?? createMemoryHistory(routerBase);
     const routes2 = routerOptions.routes ? ([__temp, __restore] = executeAsync(() => routerOptions.routes(_routes)), __temp = await __temp, __restore(), __temp) ?? _routes : _routes;
     let startPosition;
@@ -903,6 +920,9 @@ function prerenderRoutes(path) {
 let routes;
 const prerender_server_sqIxOBipVr4FbVMA9kqWL0wT8FPop6sKAXLVfifsJzk = /* @__PURE__ */ defineNuxtPlugin(async () => {
   let __temp, __restore;
+  if (hashMode) {
+    return;
+  }
   if (routes && !routes.length) {
     return;
   }
@@ -1143,6 +1163,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __ssrInlineRender: true,
   setup(__props) {
     const isReady = ref(false);
+    const router = useRouter$1();
     const onPreloaderComplete = () => {
       isReady.value = true;
       nextTick(() => {
@@ -1151,6 +1172,9 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     const handleNavigate = (selector) => {
       return;
     };
+    router.afterEach((to) => {
+      return;
+    });
     return (_ctx, _push, _parent, _attrs) => {
       const _component_SvgFilters = _sfc_main$5;
       const _component_Preloader = _sfc_main$4;
@@ -1188,7 +1212,7 @@ const _sfc_main$1 = {
     const statusText = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-_JOpWVaS.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-ptS4me7J.mjs'));
     const _Error = defineAsyncComponent(() => import('./error-500-DoeD7OPo.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
@@ -1281,5 +1305,5 @@ let entry;
 }
 const entry_default = ((ssrContext) => entry(ssrContext));
 
-export { _sfc_main$3 as _, _imports_0 as a, useNuxtApp as b, useRuntimeConfig as c, nuxtLinkDefaults as d, entry_default as default, encodeRoutePath as e, navigateTo as n, resolveRouteObject as r, tryUseNuxtApp as t, useRouter as u };
+export { _sfc_main$3 as _, _imports_0 as a, useNuxtApp as b, useRuntimeConfig as c, nuxtLinkDefaults as d, entry_default as default, encodeRoutePath as e, hashMode as h, navigateTo as n, resolveRouteObject as r, tryUseNuxtApp as t, useRouter as u };
 //# sourceMappingURL=server.mjs.map

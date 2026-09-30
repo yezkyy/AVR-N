@@ -4,7 +4,7 @@ import { baseURL, publicAssetsURL } from "#internal/nuxt/paths";
 import { createHooks } from "D:/Project/AVRÉN/node_modules/hookable/dist/index.mjs";
 import { getContext, executeAsync } from "D:/Project/AVRÉN/node_modules/unctx/dist/index.mjs";
 import { sanitizeStatusCode, createError as createError$1, appendHeader } from "D:/Project/AVRÉN/node_modules/h3/dist/index.mjs";
-import { START_LOCATION, createMemoryHistory, createRouter, RouterView } from "vue-router";
+import { START_LOCATION, createMemoryHistory, createRouter, RouterView, useRouter as useRouter$1 } from "vue-router";
 import { defu } from "D:/Project/AVRÉN/node_modules/defu/dist/defu.mjs";
 import { hasProtocol, joinURL, parseURL, encodePath, decodePath, withQuery, isScriptProtocol } from "D:/Project/AVRÉN/node_modules/ufo/dist/index.mjs";
 import { ssrRenderAttrs, ssrRenderAttr, ssrInterpolate, ssrRenderStyle, ssrRenderList, ssrRenderClass, ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from "vue/server-renderer";
@@ -525,14 +525,27 @@ function _calculatePosition(to, from, savedPosition, defaultHashScrollBehaviour)
     top: 0
   };
 }
+const routerOptions1 = {
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return {
+        el: to.hash,
+        top: 60,
+        behavior: "smooth"
+      };
+    }
+    return { top: 0, left: 0, behavior: "instant" };
+  }
+};
 const configRouterOptions = {
   hashMode: false,
   scrollBehaviorType: "auto"
 };
-const hashMode = false;
+const hashMode = routerOptions1.hashMode ?? false;
 const routerOptions = {
   ...configRouterOptions,
-  ...routerOptions0
+  ...routerOptions0,
+  ...routerOptions1
 };
 const sensitiveMatcher = (m, p) => {
   return [];
@@ -570,12 +583,12 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import("./_nuxt/index-CXyq1V0M.js")
+    component: () => import("./_nuxt/index-DgO7DxnG.js")
   },
   {
     name: "products-id",
     path: "/products/:id()",
-    component: () => import("./_nuxt/_id_-DMF3wk87.js")
+    component: () => import("./_nuxt/_id_-Bd1I3zv1.js")
   }
 ];
 const validate = /* @__PURE__ */ defineNuxtRouteMiddleware(async (to) => {
@@ -617,6 +630,9 @@ const plugin = /* @__PURE__ */ defineNuxtPlugin({
   async setup(nuxtApp) {
     let __temp, __restore;
     let routerBase = (/* @__PURE__ */ useRuntimeConfig()).app.baseURL;
+    if (hashMode && !routerBase.includes("#")) {
+      routerBase += "#";
+    }
     const history = routerOptions.history?.(routerBase) ?? createMemoryHistory(routerBase);
     const routes2 = routerOptions.routes ? ([__temp, __restore] = executeAsync(() => routerOptions.routes(_routes)), __temp = await __temp, __restore(), __temp) ?? _routes : _routes;
     let startPosition;
@@ -1129,6 +1145,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __ssrInlineRender: true,
   setup(__props) {
     const isReady = ref(false);
+    const router = useRouter$1();
     const onPreloaderComplete = () => {
       isReady.value = true;
       nextTick(() => {
@@ -1137,6 +1154,9 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     const handleNavigate = (selector) => {
       return;
     };
+    router.afterEach((to) => {
+      return;
+    });
     return (_ctx, _push, _parent, _attrs) => {
       const _component_SvgFilters = _sfc_main$5;
       const _component_Preloader = _sfc_main$4;
@@ -1174,7 +1194,7 @@ const _sfc_main$1 = {
     const statusText = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import("./_nuxt/error-404-_JOpWVaS.js"));
+    const _Error404 = defineAsyncComponent(() => import("./_nuxt/error-404-ptS4me7J.js"));
     const _Error = defineAsyncComponent(() => import("./_nuxt/error-500-DoeD7OPo.js"));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
@@ -1274,6 +1294,7 @@ export {
   nuxtLinkDefaults as d,
   entry_default as default,
   encodeRoutePath as e,
+  hashMode as h,
   navigateTo as n,
   resolveRouteObject as r,
   tryUseNuxtApp as t,
